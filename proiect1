@@ -1,0 +1,119 @@
+model small
+.stack 200h
+.data
+    mes db "Citeste numere:$"
+	numar1 dw 0
+	numar2 dw 0
+	mesaj db "Este divizor$"
+	mesaj1 db "Nu este divizor$"
+	x dw 0
+.code
+
+  afisareMesaj proc
+  mov dx, offset mesaj
+   mov ah, 09h
+   int 21h   
+   ret
+  afisareMesaj Endp
+ Impartirenr macro numar
+ mov ax, numar
+ div bx
+ cmp dx, 0
+ je divizor
+ jmp divizor1
+		
+   endm
+  
+  
+  afisareMesaj1 proc
+  mov dx, offset mesaj1
+   mov ah, 09h
+   int 21h   
+   ret  
+  afisareMesaj1 Endp
+	main:
+		mov ax, @data
+		mov ds, ax
+		
+		
+		mov dx, offset mes
+        mov ah, 09h
+        int 21h 
+		
+		mov cx, 10
+		mov bh, 0
+		citireNumar1:
+			mov ah, 01h
+			int 21h
+			
+			cmp al, 13
+			je citireNumar2
+			
+			cmp al, 32
+			je  citireNumar2
+			
+			sub al, 48
+			mov bl, al
+			
+			mov ax, numar1
+			mul cx
+			
+			add ax, bx
+			mov numar1, ax
+		jmp citireNumar1
+		
+		citireNumar2:mov ah, 01h
+			int 21h
+			
+			cmp al, 13
+			je Next
+			
+			cmp al, 32
+			je  Next
+			
+			sub al, 48
+			mov bl, al
+			
+			mov ax, numar2
+			mul cx
+			
+			add ax, bx
+			mov numar2, ax
+        jmp citireNumar2
+		
+		Next:
+		mov dx, 0
+		mov ax, numar1
+		mov bx, numar2
+		cmp bx, ax
+	    jle Impartire
+		jmp Schimbare
+		
+		Schimbare:
+		mov ax, numar2
+		mov bx, numar1
+		jmp Impartire2
+		
+		Impartire:
+		Impartirenr numar1
+		
+		Impartire2:
+		Impartirenr numar2
+		
+		
+		divizor:
+		call afisareMesaj
+		jmp amTerminat
+		
+		divizor1:
+		call afisareMesaj1
+		jmp amTerminat
+		
+		amTerminat:
+			mov dl, 10
+			mov ah, 02h
+			int 21h
+
+			mov ah, 4ch
+			int 21h
+	end main
